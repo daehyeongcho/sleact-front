@@ -1,9 +1,11 @@
 import React, { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Header, Form, Label, Input, LinkContainer, Button, Error, Success } from './styles'
-import useInput from '@hooks/useInput'
 import { useForm } from 'react-hook-form'
+import axios from 'axios'
+import { Header, Form, Label, Input, LinkContainer, Button, Error, Success } from './styles'
+import Fetcher from '@utils/fetcher'
 
+// signup form
 type FormValues = {
     email: string
     nickname: string
@@ -11,7 +13,9 @@ type FormValues = {
     passwordCheck: string
 }
 
+// signup component
 const SignUp = () => {
+    /* react-hook-form start */
     const {
         watch,
         register,
@@ -25,14 +29,34 @@ const SignUp = () => {
             passwordCheck: '',
         },
     })
-
     const watchPassword = watch('password') // watch password
+    /* react-hook-form end */
 
-    const [signUpError, setSignUpError] = useState(false) // signup error
+    const [signUpError, setSignUpError] = useState('') // signup error
     const [signUpSuccess, setSignUpSuccess] = useState(false) // signup success
 
-    const onSubmit = useCallback((data: FormValues) => {
+    // form submit
+    const onSubmit = useCallback(async (data: FormValues) => {
         console.log(data)
+        setSignUpError('')
+        setSignUpSuccess(false)
+
+        try {
+            const response = await Fetcher('post', '/api/users', {
+                email: data.email,
+                nickname: data.nickname,
+                password: data.password,
+            }) // axios post
+            console.log(response)
+            setSignUpSuccess(true) // success
+        } catch (e) {
+            if (axios.isAxiosError(e)) {
+                console.error(e)
+                setSignUpError(e?.response?.data)
+            } else {
+                console.error(e)
+            }
+        }
     }, [])
 
     return (
