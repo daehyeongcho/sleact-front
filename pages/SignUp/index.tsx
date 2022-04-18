@@ -1,36 +1,58 @@
 import React, { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Header, Form, Label, Input, LinkContainer, Button, Error, Success } from './styles'
+import useInput from '@hooks/useInput'
+import { useForm } from 'react-hook-form'
+
+type FormValues = {
+    email: string
+    nickname: string
+    password: string
+    passwordCheck: string
+}
 
 const SignUp = () => {
-    const [email /*, onChangeEmail*/] = useState('')
-    const [nickname /*, onChangeNickname*/] = useState('')
-    const [password, setPassword] = useState('')
-    const [passwordCheck, setPasswordCheck] = useState('')
-    const [mismatchError, setMismatchError] = useState(false)
-    const [signUpError, setSignUpError] = useState(false)
-    const [signUpSuccess, setSignUpSuccess] = useState(false)
+    const {
+        watch,
+        register,
+        formState: { errors },
+        handleSubmit,
+    } = useForm<FormValues>({
+        defaultValues: {
+            email: '',
+            nickname: '',
+            password: '',
+            passwordCheck: '',
+        },
+    })
 
-    const onChangeEmail = useCallback(() => {}, [])
-    const onChangeNickname = useCallback(() => {}, [])
-    const onChangePassword = useCallback(() => {}, [])
-    const onChangePasswordCheck = useCallback(() => {}, [])
-    const onSubmit = useCallback(() => {}, [])
+    const watchPassword = watch('password') // watch password
+
+    const [signUpError, setSignUpError] = useState(false) // signup error
+    const [signUpSuccess, setSignUpSuccess] = useState(false) // signup success
+
+    const onSubmit = useCallback((data: FormValues) => {
+        console.log(data)
+    }, [])
 
     return (
         <div id='container'>
             <Header>Sleact</Header>
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
                 <Label id='email-label'>
                     <span>이메일 주소</span>
                     <div>
-                        <Input type='email' id='email' name='email' value={email} onChange={onChangeEmail} />
+                        <Input type='email' id='email' {...register('email', { required: '이메일을 입력해주세요.' })} />
                     </div>
                 </Label>
                 <Label id='nickname-label'>
                     <span>닉네임</span>
                     <div>
-                        <Input type='text' id='nickname' name='nickname' value={nickname} onChange={onChangeNickname} />
+                        <Input
+                            type='text'
+                            id='nickname'
+                            {...register('nickname', { required: '닉네임을 입력해주세요.' })}
+                        />
                     </div>
                 </Label>
                 <Label id='password-label'>
@@ -39,9 +61,9 @@ const SignUp = () => {
                         <Input
                             type='password'
                             id='password'
-                            name='password'
-                            value={password}
-                            onChange={onChangePassword}
+                            {...register('password', {
+                                required: '비밀번호를 입력해주세요',
+                            })}
                         />
                     </div>
                 </Label>
@@ -50,14 +72,19 @@ const SignUp = () => {
                     <div>
                         <Input
                             type='password'
-                            id='password-check'
-                            name='password-check'
-                            value={passwordCheck}
-                            onChange={onChangePasswordCheck}
+                            id='passwordCheck'
+                            {...register('passwordCheck', {
+                                validate: {
+                                    passwordMatch: (value) =>
+                                        value === watchPassword || '비밀번호가 일치하지 않습니다.',
+                                },
+                            })}
                         />
                     </div>
-                    {mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
-                    {!nickname && <Error>닉네임을 입력해주세요.</Error>}
+                    {errors.email && <Error>{errors.email.message}</Error>}
+                    {errors.nickname && <Error>{errors.nickname.message}</Error>}
+                    {errors.password && <Error>{errors.password.message}</Error>}
+                    {errors.passwordCheck && <Error>{errors.passwordCheck.message}</Error>}
                     {signUpError && <Error>{signUpError}</Error>}
                     {signUpSuccess && <Success>회원가입되었습니다! 로그인해주세요.</Success>}
                 </Label>
