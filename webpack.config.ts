@@ -1,7 +1,8 @@
 import path from 'path'
+
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin'
-import webpack from 'webpack'
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+import webpack from 'webpack'
 // import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import WebpackDevServer from 'webpack-dev-server'
 

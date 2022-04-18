@@ -1,9 +1,12 @@
 import React, { useCallback, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
+
 import axios from 'axios'
-import { Header, Form, Label, Input, LinkContainer, Button, Error, Success } from './styles'
+import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
+
 import Fetcher from '@utils/fetcher'
+
+import { Header, Form, Label, Input, LinkContainer, Button, Error, Success } from './styles'
 
 // signup form
 type FormValues = {
