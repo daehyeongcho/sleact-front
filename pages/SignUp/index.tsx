@@ -45,11 +45,16 @@ const SignUp = () => {
         setSignUpSuccess(false)
 
         try {
-            const response = await Fetcher('post', '/api/users', {
-                email: data.email,
-                nickname: data.nickname,
-                password: data.password,
-            }) // axios post
+            const response = await Fetcher(
+                'post',
+                '/api/users',
+                {
+                    email: data.email,
+                    nickname: data.nickname,
+                    password: data.password,
+                },
+                { withCredentials: false },
+            ) // axios post
             console.log(response)
             setSignUpSuccess(true) // success
         } catch (e) {

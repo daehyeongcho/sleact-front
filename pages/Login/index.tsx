@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { Link, Route, Navigate } from 'react-router-dom'
 
 import { Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/SignUp/styles'
 import Fetcher from '@utils/fetcher'
@@ -26,28 +27,42 @@ const LogIn = () => {
 
     const [logInError, setLogInError] = useState(false) // login error
 
+    /* react-query start */
+    const { data, isLoading } = useQuery('user', () => Fetcher('get', '/api/users', null)) // react-query
+    const queryClient = useQueryClient() // react-query client
+    const loginMutation = useMutation<any, AxiosError, FormValues>( // login mutation
+        'user',
+        (data) => Fetcher('post', '/api/users/login', data),
+        {
+            onError: (e) => {
+                console.error(e)
+                setLogInError(e?.response?.status === 401)
+            },
+            onMutate: () => {
+                setLogInError(false)
+            },
+            onSuccess: () => {
+                queryClient.invalidateQueries('user')
+            },
+        },
+    )
+    /* react-query end */
+
     // form submit
     const onSubmit = async (data: FormValues) => {
         setLogInError(false)
-
-        try {
-            const result = await Fetcher('post', '/api/users/login', data)
-            console.log(result)
-        } catch (e) {
-            if (axios.isAxiosError(e)) {
-                console.error(e)
-                setLogInError(e?.response?.status === 401)
-            }
-        }
+        loginMutation.mutate(data)
     }
 
-    // if (data === undefined) {
-    //     return <div>로딩중...</div>
-    // }
+    // loading
+    if (isLoading) {
+        return <div>로딩중...</div>
+    }
 
-    // if (data) {
-    //     return <Route element={<Navigate replace to='/workspace/sleact/channel/일반' />} />
-    // }
+    // already login
+    if (data) {
+        return <Navigate replace to='/workspace/sleact/channel/일반' />
+    }
 
     // console.log(error, userData);
     // if (!error && userData) {

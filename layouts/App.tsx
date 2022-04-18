@@ -1,9 +1,9 @@
-import React from 'react'
-import { Navigate } from 'react-router'
-import { Routes, Route } from 'react-router-dom'
+import React, { lazy } from 'react'
 
-const LogIn = React.lazy(() => import('@pages/LogIn'))
-const SignUp = React.lazy(() => import('@pages/SignUp'))
+import { Routes, Route, Navigate } from 'react-router-dom'
+
+const LogIn = lazy(() => import('@pages/LogIn'))
+const SignUp = lazy(() => import('@pages/SignUp'))
 
 const App = () => {
     return (
