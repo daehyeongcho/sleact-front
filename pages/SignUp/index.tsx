@@ -2,7 +2,8 @@ import React, { useCallback, useState } from 'react'
 
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { useQuery } from 'react-query'
+import { Link, Navigate } from 'react-router-dom'
 
 import Fetcher from '@utils/fetcher'
 
@@ -38,6 +39,8 @@ const SignUp = () => {
     const [signUpError, setSignUpError] = useState('') // signup error
     const [signUpSuccess, setSignUpSuccess] = useState(false) // signup success
 
+    const { data, isLoading } = useQuery('user', () => Fetcher('get', '/api/users', null)) // react-query useQuery
+
     // form submit
     const onSubmit = useCallback(async (data: FormValues) => {
         console.log(data)
@@ -66,6 +69,9 @@ const SignUp = () => {
             }
         }
     }, [])
+
+    if (data === undefined) return <div>로딩중...</div> // loading
+    if (data) return <Navigate replace to='/workspace/channel/일반' /> // already login
 
     return (
         <div id='container'>

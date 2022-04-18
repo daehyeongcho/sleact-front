@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 
-import axios, { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Link, Route, Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 
 import { Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/SignUp/styles'
 import Fetcher from '@utils/fetcher'
@@ -28,18 +28,16 @@ const LogIn = () => {
     const [logInError, setLogInError] = useState(false) // login error
 
     /* react-query start */
-    const { data, isLoading } = useQuery('user', () => Fetcher('get', '/api/users', null)) // react-query
+    const { data } = useQuery('user', () => Fetcher('get', '/api/users', null)) // react-query useQuery
     const queryClient = useQueryClient() // react-query client
     const loginMutation = useMutation<any, AxiosError, FormValues>( // login mutation
-        'user',
+        'login',
         (data) => Fetcher('post', '/api/users/login', data),
         {
+            onMutate: async (user) => setLogInError(false),
             onError: (e) => {
                 console.error(e)
                 setLogInError(e?.response?.status === 401)
-            },
-            onMutate: () => {
-                setLogInError(false)
             },
             onSuccess: () => {
                 queryClient.invalidateQueries('user')
@@ -54,15 +52,8 @@ const LogIn = () => {
         loginMutation.mutate(data)
     }
 
-    // loading
-    if (isLoading) {
-        return <div>로딩중...</div>
-    }
-
-    // already login
-    if (data) {
-        return <Navigate replace to='/workspace/sleact/channel/일반' />
-    }
+    if (data === undefined) return <div>로딩중...</div> // loading
+    if (data) return <Navigate replace to='/workspace/channel/일반' /> // already login
 
     // console.log(error, userData);
     // if (!error && userData) {
