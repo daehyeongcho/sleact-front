@@ -2,7 +2,9 @@ import axios from 'axios'
 
 axios.defaults.baseURL = 'http://localhost:3095'
 
-const Fetcher = async (type: string, url: string, data: any) => {
+type MethodType = 'get' | 'post' | 'patch' | 'delete' // method
+
+const Fetcher = async (type: MethodType, url: string, data: any) => {
     let response
 
     switch (type) {
