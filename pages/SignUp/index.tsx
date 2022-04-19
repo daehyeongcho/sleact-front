@@ -42,7 +42,7 @@ const SignUp = () => {
     const { data, isLoading } = useQuery('user', () => Fetcher('get', '/api/users', null)) // react-query useQuery
 
     // form submit
-    const onSubmit = useCallback(async (data: FormValues) => {
+    const handleOnSubmit = useCallback(async (data: FormValues) => {
         console.log(data)
         setSignUpError('')
         setSignUpSuccess(false)
@@ -76,7 +76,7 @@ const SignUp = () => {
     return (
         <div id='container'>
             <Header>Sleact</Header>
-            <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form onSubmit={handleSubmit(handleOnSubmit)}>
                 <Label id='email-label'>
                     <span>이메일 주소</span>
                     <div>

@@ -1,16 +1,19 @@
-import React, { FC, ReactNode, lazy } from 'react'
+import React, { FC, ReactNode, lazy, useCallback, useState } from 'react'
 
 import { AxiosError } from 'axios'
-import gravatar, { url } from 'gravatar'
+import gravatar from 'gravatar'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, Routes, Route } from 'react-router-dom'
 
+import Menu from '@components/Menu'
 import {
     Channels,
     Chats,
     Header,
+    LogOutButton,
     MenuScroll,
     ProfileImg,
+    ProfileModal,
     RightMenu,
     WorkspaceName,
     Workspaces,
@@ -22,7 +25,7 @@ import Fetcher from '@utils/fetcher'
 const Channel = lazy(() => import('@pages/Channel'))
 const DirectMessage = lazy(() => import('@pages/DirectMessage'))
 
-type Props = {
+interface Props {
     children?: ReactNode
 }
 
@@ -40,7 +43,12 @@ const Workspace: FC<Props> = ({ children }) => {
     }) // react-query useMutation (logout)
     /* react-query end */
 
-    const onLogout = () => logoutMutation.mutate() // logout
+    const [showUserMenu, setShowUserMenu] = useState(false) // user menu 보여줄지 여부
+
+    const handleLogout = () => logoutMutation.mutate() // logout
+    const handleClickUserProfile = useCallback(() => {
+        setShowUserMenu((prev) => !prev)
+    }, [])
 
     if (!data) {
         // 유저 정보 없음
@@ -52,12 +60,30 @@ const Workspace: FC<Props> = ({ children }) => {
         <div>
             <Header>
                 <RightMenu>
-                    <span>
-                        <ProfileImg src={url(data.email, { s: '28px', d: 'retro' })} alt={data.nickname} />
+                    <span onClick={handleClickUserProfile}>
+                        <ProfileImg src={gravatar.url(data.email, { s: '28px', d: 'retro' })} alt={data.nickname} />
+                        {showUserMenu && (
+                            <Menu
+                                style={{ right: 0, top: 38 }}
+                                show={showUserMenu}
+                                onCloseModal={handleClickUserProfile}
+                            >
+                                <ProfileModal>
+                                    <img
+                                        src={gravatar.url(data.nickname, { s: '36px', d: 'retro' })}
+                                        alt={data.nickname}
+                                    />
+                                    <div>
+                                        <span id='profile-name'>{data.nickname}</span>
+                                        <span id='profile-active'>Active</span>
+                                    </div>
+                                </ProfileModal>
+                                <LogOutButton onClick={handleLogout}>로그아웃</LogOutButton>
+                            </Menu>
+                        )}
                     </span>
                 </RightMenu>
             </Header>
-            <button onClick={onLogout}>로그아웃</button>
             <WorkspaceWrapper>
                 <Workspaces>test</Workspaces>
                 <Channels>

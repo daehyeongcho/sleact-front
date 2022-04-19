@@ -47,7 +47,7 @@ const LogIn = () => {
     /* react-query end */
 
     // form submit
-    const onSubmit = async (data: FormValues) => {
+    const handleOnSubmit = async (data: FormValues) => {
         setLogInError(false)
         loginMutation.mutate(data)
     }
@@ -64,7 +64,7 @@ const LogIn = () => {
     return (
         <div id='container'>
             <Header>Sleact</Header>
-            <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form onSubmit={handleSubmit(handleOnSubmit)}>
                 <Label id='email-label'>
                     <span>이메일 주소</span>
                     <div>
